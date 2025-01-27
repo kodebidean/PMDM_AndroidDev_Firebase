@@ -20,6 +20,11 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.kodeleku.firebasedam_v1.databinding.ActivityAuthBinding
 
 class AuthActivity : AppCompatActivity() {
@@ -45,19 +50,31 @@ class AuthActivity : AppCompatActivity() {
             insets
         }
 
-        // Configuración de Firebase Analytics
+        // Configuración de ANALYTICS
         val analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(this)
         val bundle = Bundle()
         bundle.putString("message", "Integración de Firebase completa")
         analytics.logEvent("InitScreen", bundle)
 
-        // Configuración de Google Sign-In
+        // Configuración de GOOGLE SIGN-IN
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
 
+        // REMOTE CONFIG
+        // Configurar el tiempo para recargar los valores
+        val configSettings: FirebaseRemoteConfigSettings = remoteConfigSettings {
+                minimumFetchIntervalInSeconds = 60
+
+        }
+        // Creamos una constante instanciada de FirebaseRemoteConfig
+        val firebaseConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        // Accedemos a la instancia y le añadimos nuestra configuración
+        firebaseConfig.setConfigSettingsAsync(configSettings)
+        // Configurar las variables remotas de firebse, podemos pasarle un xml o un mapa de valores por defecto
+        firebaseConfig.setDefaultsAsync(mapOf("show_error_button" to false, "error_button_text" to "Forzar Error"))
         // SETUP
         setup()
         // SESSION

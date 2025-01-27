@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.play.services.auth) // Google authentication
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.crashlytics)
-
+    implementation(libs.firebase.config)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -2,6 +2,7 @@ package com.kodeleku.firebasedam_v1
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfig
 import com.kodeleku.firebasedam_v1.databinding.ActivityHomeBinding
 
 // ENUM de TIPOS de PROVIDER para AUTH
@@ -50,7 +54,20 @@ class HomeActivity : AppCompatActivity() {
         prefs.putString("provider", provider) // añadimos el provider
         prefs.apply() // Asegurmaos que se hayan guardado los nuevos datos en nuestra app
 
-        //
+        // REMOTE CONFIG
+        // Recuperar los datos
+        binding.btnCrash.visibility = View.INVISIBLE
+        Firebase.remoteConfig.fetchAndActivate().addOnCompleteListener{ task ->
+            if (task.isSuccessful){
+                val showErrorButton: Boolean = Firebase.remoteConfig.getBoolean("show_error_button")
+                val errorButtonText: String = Firebase.remoteConfig.getString("error_button_text")
+
+                if(showErrorButton){
+                    binding.btnCrash.visibility = View.VISIBLE
+                }
+                binding.btnCrash.text = errorButtonText
+            }
+        }
 
     }
     private fun setup(email:String, provider:String) {
@@ -74,6 +91,8 @@ class HomeActivity : AppCompatActivity() {
             FirebaseCrashlytics.getInstance().setUserId(email)
             // Tipo de proveedor que ha utilizado
             FirebaseCrashlytics.getInstance().setCustomKey("provider", provider)
+            // Enviar log de contexto (info del error)
+            FirebaseCrashlytics.getInstance().log("Se ha pulsado el botón de testeo de error para Crashlytics")
 
             // Forzado de error
             throw RuntimeException("Forzado de error")
