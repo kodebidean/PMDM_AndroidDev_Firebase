@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth) // Google authentication
     implementation(libs.firebase.storage.ktx)
 
     testImplementation(libs.junit)

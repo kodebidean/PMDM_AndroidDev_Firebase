@@ -7,4 +7,6 @@
     <string name="sign_out">Sign out</string>
     <string name="close_session">Close Session</string>
     <string name="proveedor">Proveedor</string>
+    <string name="google">Google</string>
+    <string name="prefs_file">"com.kodeleku.firebasedam_v1.PREFERENCE_FILE_KEY"</string>
 </resources>

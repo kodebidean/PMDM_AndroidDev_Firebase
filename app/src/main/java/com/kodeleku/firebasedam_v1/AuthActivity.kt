@@ -1,21 +1,42 @@
 package com.kodeleku.firebasedam_v1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.kodeleku.firebasedam_v1.databinding.ActivityAuthBinding
 
 class AuthActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityAuthBinding
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    // Registramos un launcher para manejar el resultado de la actividad de Google Sign-In
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        handleGoogleSignInResult(result)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding=ActivityAuthBinding.inflate(layoutInflater)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -24,75 +45,123 @@ class AuthActivity : AppCompatActivity() {
             insets
         }
 
-        // ANALYTICS EVENT
-        // Instanciamos FirebaseAnalytics para llamarlo en nuestro proyecto
-        val analaytics:FirebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        // Creamos una instanciación de Bundle
+        // Configuración de Firebase Analytics
+        val analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(this)
         val bundle = Bundle()
-        // Damos una clave y valor a nuestra instancia "bundle"
         bundle.putString("message", "Integración de Firebase completa")
-        // llamamos al método logEvent de la instancia "analytics" que necesita una clave "InitScreen" y unos parámetros, que recibe de "bundle"
-        analaytics.logEvent("InitScreen", bundle)
+        analytics.logEvent("InitScreen", bundle)
+
+        // Configuración de Google Sign-In
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
 
         // SETUP
         setup()
+        // SESSION
+        session()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.authLayout.visibility = View.VISIBLE
+    }
+
+    private fun session() {
+        val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
+        val email = prefs.getString("email", null)
+        val provider = prefs.getString("provider", null)
+
+        if (email != null && provider != null) {
+            binding.authLayout.visibility = View.INVISIBLE
+            showHome(email, ProviderType.valueOf(provider))
+        }
     }
 
     private fun setup() {
-        // Titulo de la pantalla
         title = "Authentication"
-        // Acceder al botón de registro
-        binding.btnSignUp.setOnClickListener{
-            // Comprobar datos correctos, en este ejemplo simplemente comprobamos que los editText no esten vacíos
-            if (binding.etEmail.text.isNotEmpty() && binding.etPassword.text.isNotEmpty()){
-                // Accedemos a FirebaseAuth, crear instancia y usamos la función que nos permite crear un usuario con email y password
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
-                    .addOnCompleteListener{ // Nos notifica si la operación de registro ha sido correcta o no
 
-                        if (it.isSuccessful){
-                            // Como indicamos en la fun showHome debemos pasarle el email y el tipo de proveedor
-                            showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
-                            // En el caso de email, para evitar el error debemos añadir los interrogantes por si pudiese ser null y en el caso de que lo sea nos mande un string vacío
-                        }else { // Si no es correcto le mostramos la Alerta de que ha habido un error
-                            showAlert()
+        // Registro con email y contraseña
+        binding.btnSignUp.setOnClickListener {
+            val email = binding.etEmail.text.toString()
+            val password = binding.etPassword.text.toString()
+
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            showHome(task.result?.user?.email ?: "", ProviderType.BASIC)
+                        } else {
+                            showAlert(task.exception?.message ?: "Error desconocido")
                         }
                     }
-            }
-        }
-        // Listener de botón de login (Solo cambia el método de Firebase de createUserWithEmailAndPassword a signInWithEmailAndPassword)
-        binding.btnLogin.setOnClickListener{
-            if (binding.etEmail.text.isNotEmpty() && binding.etPassword.text.isNotEmpty()){
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
-                    .addOnCompleteListener{
-                        if (it.isSuccessful){
-                            showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
-                        }else {
-                            showAlert()
-                        }
-                    }
+            } else {
+                showAlert("Por favor, completa todos los campos.")
             }
         }
 
+        // Inicio de sesión con email y contraseña
+        binding.btnLogin.setOnClickListener {
+            val email = binding.etEmail.text.toString()
+            val password = binding.etPassword.text.toString()
+
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            showHome(task.result?.user?.email ?: "", ProviderType.BASIC)
+                        } else {
+                            showAlert(task.exception?.message ?: "Error desconocido")
+                        }
+                    }
+            } else {
+                showAlert("Por favor, completa todos los campos.")
+            }
+        }
+
+        // Inicio de sesión con Google
+        binding.btnGoogle.setOnClickListener {
+            googleSignInClient.signOut() // Cerrar sesión previa (si existe)
+            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+        }
     }
-    private fun showAlert() {
+
+    private fun handleGoogleSignInResult(result: ActivityResult) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account: GoogleSignInAccount? = task.getResult(ApiException::class.java)
+            if (account != null) {
+                val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
+                FirebaseAuth.getInstance().signInWithCredential(credential)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            showHome(account.email ?: "", ProviderType.GOOGLE)
+                        } else {
+                            showAlert(task.exception?.message ?: "Error desconocido")
+                        }
+                    }
+            }
+        } catch (e: ApiException) {
+            showAlert("Error al iniciar sesión con Google: ${e.message}")
+        }
+    }
+
+    private fun showAlert(message: String = "Se ha producido un error autenticando al usuario") {
         AlertDialog.Builder(this).apply {
             setTitle("Error")
-            setMessage("Se ha producido un error autenticando al usuario")
-            setPositiveButton("Aceptar", null) // No hacer nada al hacer clic
+            setMessage(message)
+            setPositiveButton("Aceptar", null)
             create()
         }.show()
     }
+
     private fun showHome(email: String, provider: ProviderType) {
-        // Crear un Intent para iniciar HomeActivity
-        val homeIntent = Intent(this, HomeActivity::class.java)
-
-        // Pasar datos a la nueva activity
-        homeIntent.putExtra("email", email)
-        homeIntent.putExtra("provider", provider.name)
-
-        // Iniciar la nueva activity
+        val homeIntent = Intent(this, HomeActivity::class.java).apply {
+            putExtra("email", email)
+            putExtra("provider", provider.name)
+        }
         startActivity(homeIntent)
     }
-
-
 }

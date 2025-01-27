@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/authLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AuthActivity">
@@ -26,12 +27,10 @@
             android:ems="10"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
+            android:layout_marginBottom="8dp"
             android:minHeight="48dp" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            tools:layout_editor_absoluteX="16dp" />
+
 
         <EditText
             android:id="@+id/etPassword"
@@ -40,13 +39,10 @@
             android:ems="10"
             android:hint="@string/password"
             android:inputType="textPassword"
+            android:layout_marginBottom="8dp"
             android:minHeight="48dp" />
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="8dp"
-            tools:layout_editor_absoluteX="16dp"
-            />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,25 +54,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/googleEcosystemBlue"
+                android:layout_marginEnd="4dp"
+                android:background="@color/firebaseAmarillo"
                 android:text="@string/registrar"
                 android:textColor="#212121" />
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content" />
+
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="4dp"
                 android:background="@color/googleCloudGreen"
                 android:text="@string/acceder"
-
                 android:textColor="#3E2723" />
 
-
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@color/white"
+            android:drawableStart="@mipmap/google"
+            android:textAlignment="textStart"
+            android:drawablePadding="8dp"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:text="@string/google" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

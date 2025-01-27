@@ -1,5 +1,6 @@
 package com.kodeleku.firebasedam_v1
 
+import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.activity.enableEdgeToEdge
@@ -11,8 +12,8 @@ import com.kodeleku.firebasedam_v1.databinding.ActivityAuthBinding
 import com.kodeleku.firebasedam_v1.databinding.ActivityHomeBinding
 // ENUM de TIPOS de PROVIDER para AUTH
 enum class ProviderType {
-    // Authentication BASIC (email, password)
-    BASIC
+    BASIC, // Authentication BASIC (email, password)
+    GOOGLE // Authentication GOOGLE
 }
 
 class HomeActivity : AppCompatActivity() {
@@ -34,6 +35,14 @@ class HomeActivity : AppCompatActivity() {
         val email: String? = bundle?.getString("email")
         val provider: String? = bundle?.getString("provider")
         setup(email ?: "No email provided", provider ?: "No provider provided" )
+
+        // GUARDADO DE DATOS
+        // Acceso a shared preferences
+        val prefs = getSharedPreferences(getString(R.string.prefs_file),Context.MODE_PRIVATE).edit()
+        prefs.putString("email", email) // añadimos el email
+        prefs.putString("provider", provider) // añadimos el provider
+        prefs.apply() // Asegurmaos que se hayan guardado los nuevos datos en nuestra app
+
     }
 
     private fun setup(email:String, provider:String) {
@@ -42,6 +51,11 @@ class HomeActivity : AppCompatActivity() {
         binding.tvProveedor.text=provider
 
         binding.btnLogout.setOnClickListener {
+            // Borrado de datos -- Una vez delogeemos debemos asegurar de borrar los datos de shared preferences
+            val prefs = getSharedPreferences(getString(R.string.prefs_file),Context.MODE_PRIVATE).edit()
+            prefs.clear() // Limpiamos las preferencias
+            prefs.apply() // Aseguramos el guardado de cambios
+
             FirebaseAuth.getInstance().signOut()
             onBackPressedDispatcher.onBackPressed()
         }

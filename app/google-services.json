@@ -12,7 +12,20 @@
           "package_name": "com.kodeleku.firebasedam_v1"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "206672285857-vggj1k7u8ps8h0v1bnno38bvof9q17om.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kodeleku.firebasedam_v1",
+            "certificate_hash": "61fcf4870ff533558189fed6d8f9b84f4110f74d"
+          }
+        },
+        {
+          "client_id": "206672285857-tvu9puget3v87jstuoad3461hhj799cc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDPkxMvCd29M6Dw-JELcDuhuFfcg4w1Lno"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "206672285857-tvu9puget3v87jstuoad3461hhj799cc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
