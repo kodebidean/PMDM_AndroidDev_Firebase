@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompatSideChannelService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.kodeleku.firebasedam_v1.databinding.ActivityHomeBinding
 
 // ENUM de TIPOS de PROVIDER para AUTH
@@ -50,17 +51,6 @@ class HomeActivity : AppCompatActivity() {
         prefs.apply() // Asegurmaos que se hayan guardado los nuevos datos en nuestra app
 
         //
-        /**        CRASHLYTICS (PRUEBA DE FALLO)
-         *
-         *         val crashButton = binding.btnCrash
-         *         crashButton.text = "Test Crash"
-         *         crashButton.setOnClickListener {
-         *             throw RuntimeException("Test Crash") // Force a crash
-         *         }
-         *         addContentView(crashButton, ViewGroup.LayoutParams(
-         *             ViewGroup.LayoutParams.MATCH_PARENT,
-         *             ViewGroup.LayoutParams.WRAP_CONTENT))
-         */
 
     }
     private fun setup(email:String, provider:String) {
@@ -78,9 +68,15 @@ class HomeActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        // CRASHLYTICS TEST BUTTON
+        binding.btnCrash.setOnClickListener{
+            // Nos permite enviar información de quien ha producido el error en este caso
+            FirebaseCrashlytics.getInstance().setUserId(email)
+            // Tipo de proveedor que ha utilizado
+            FirebaseCrashlytics.getInstance().setCustomKey("provider", provider)
+
+            // Forzado de error
+            throw RuntimeException("Forzado de error")
+        }
     }
-
-
-
-
 }
