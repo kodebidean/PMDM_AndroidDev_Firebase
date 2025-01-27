@@ -46,7 +46,7 @@ class AuthActivity : AppCompatActivity() {
             // Comprobar datos correctos, en este ejemplo simplemente comprobamos que los editText no esten vacíos
             if (binding.etEmail.text.isNotEmpty() && binding.etPassword.text.isNotEmpty()){
                 // Accedemos a FirebaseAuth, crear instancia y usamos la función que nos permite crear un usuario con email y password
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(binding.etEmail.toString(), binding.etPassword.toString())
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
                     .addOnCompleteListener{ // Nos notifica si la operación de registro ha sido correcta o no
 
                         if (it.isSuccessful){
@@ -62,7 +62,7 @@ class AuthActivity : AppCompatActivity() {
         // Listener de botón de login (Solo cambia el método de Firebase de createUserWithEmailAndPassword a signInWithEmailAndPassword)
         binding.btnLogin.setOnClickListener{
             if (binding.etEmail.text.isNotEmpty() && binding.etPassword.text.isNotEmpty()){
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(binding.etEmail.toString(), binding.etPassword.toString())
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
                     .addOnCompleteListener{
                         if (it.isSuccessful){
                             showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
@@ -74,7 +74,6 @@ class AuthActivity : AppCompatActivity() {
         }
 
     }
-
     private fun showAlert() {
         AlertDialog.Builder(this).apply {
             setTitle("Error")
@@ -83,7 +82,6 @@ class AuthActivity : AppCompatActivity() {
             create()
         }.show()
     }
-
     private fun showHome(email: String, provider: ProviderType) {
         // Crear un Intent para iniciar HomeActivity
         val homeIntent = Intent(this, HomeActivity::class.java)
