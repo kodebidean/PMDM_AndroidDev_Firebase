@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    // Add the Crashlytics Gradle plugin
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -56,6 +58,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.play.services.auth) // Google authentication
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.crashlytics)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

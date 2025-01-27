@@ -8,6 +8,7 @@
 
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -50,14 +51,27 @@
                 android:id="@+id/btnLogout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimaryDark"
                 android:text="@string/close_session"
-                android:textColor="@color/white"
-
-                />
+                android:textColor="@color/white" />
 
 
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCrash"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:background="@color/firebaseRed"
+            android:paddingHorizontal="48dp"
+            android:text="@string/crash"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
