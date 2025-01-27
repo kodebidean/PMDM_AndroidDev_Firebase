@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "206672285857",
+    "project_id": "fir-dam-be469",
+    "storage_bucket": "fir-dam-be469.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206672285857:android:0bc5e9290722feb70e60e0",
+        "android_client_info": {
+          "package_name": "com.kodeleku.firebasedam_v1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPkxMvCd29M6Dw-JELcDuhuFfcg4w1Lno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
